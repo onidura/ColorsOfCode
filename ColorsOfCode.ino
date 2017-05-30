@@ -268,23 +268,7 @@
   }
 
   void ligthFlash(){
-    /*
-    setLEDStripColor(on, on, on);
-    delay(shortFlash);
-    setLEDStripColor(off, off, off);
-    delay(shortFlash);
-    setLEDStripColor(on, on, on);
-    delay(shortFlash);
-    setLEDStripColor(off, off, off);
-    delay(shortFlash);
-    setLEDStripColor(on, on, on);
-    delay(shortFlash);
-    setLEDStripColor(off, off, off);
-    */
-
-    //PROOOOV
     int i = 0;
-    
     while(i < 3) {
       setLEDStripColor(on, on, on);
       delay(shortFlash);
