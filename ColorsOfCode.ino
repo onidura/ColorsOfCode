@@ -20,7 +20,7 @@
   String knownUIDs[] = {"174 191 49 181", "94 191 49 181", "14 191 49 181", "190 190 49 181"};
   int numberOfKnownUIDs = 4;
   
-  // Array that holds the right answers, will be iterated through at the same time as the array of knownUIDs to register the right answer.
+  // Array that holds the right answers. Will be iterated through at the same time as the array of knownUIDs to register the right answer.
   String correctAnswers[] = {"yellow", "green", "yellow", "red"};
 
   /*** CHECK VARIABLES ***/
@@ -52,6 +52,7 @@
   int buttonStateYellow = 0;
  
   int pressed = false;
+  /*** Variables for turning on and off the LED ligths ***/
   const int off = 0;
   const int on = 255;
   
@@ -85,7 +86,6 @@
     pinMode(BLUE_LED, OUTPUT);
   }
 
-
   /*** MAINLOOP ***/
   void loop() {
     
@@ -113,7 +113,8 @@
       buttonStateGreen = digitalRead(greenButton);
       buttonStateYellow = digitalRead(yellowButton);
       buttonStateBlue = digitalRead(blueButton);
-        
+      
+      // If any of the button states is HIGH, system checks the answer
       if(buttonStateRed == HIGH) {   
         Serial.println("Red is pressed");
         checkPlate(red);    
@@ -141,7 +142,7 @@
   /****RFID FUNCTIONS****/
   void readRFID(){
     // Reads the tags UID and saves this in the RFID object. 
-    // The funksjon from the MFRC522 library stores this in an array calles uidByte[].
+    // The function from the MFRC522 library stores this in an array calls uidByte[].
      rfid.PICC_ReadCardSerial();
 
    // Serial.println("\nScanned tag's UID:"); 
@@ -191,14 +192,8 @@
   }
 
   /*** FUNCTIONS FOR SOUND ***/
-  void playCardRegisteredSound() {
-    for(int i = 0; i < (sizeof(registeredCardSound) / sizeof(double)); i++){
-      tone(sound, registeredCardSound[i]);
-      delay(200);
-    }
-    noTone(sound);
-  }
 
+  // Play when setup is completed
   void playStartSound() {
     for(int i = 0; i < (sizeof(startSound) / sizeof(double)); i++){
       tone(sound, startSound[i]);
@@ -206,7 +201,16 @@
     }
     noTone(sound);
     startSoundHasBeenPlayed = true;
-}  
+  }  
+
+  // Play when a card is registered
+  void playCardRegisteredSound() {
+    for(int i = 0; i < (sizeof(registeredCardSound) / sizeof(double)); i++){
+      tone(sound, registeredCardSound[i]);
+      delay(200);
+    }
+    noTone(sound);
+  }
   
   /*** FUNCTIONS FOR BUTTONS ***/
   // Checking if plate is pressed
@@ -219,7 +223,8 @@
     if ((millis()- currentMillis)>= feetTime) {
     ligthPlateIsPressed();
     }
-    
+
+    //If the button has been pressed for 3 seconds. The system checks the answer.
     if ((millis()- currentMillis)>= checkingTime) {
       pressed = false;
       Serial.println("Checking answer");
@@ -228,7 +233,7 @@
     }
   }
    
-  // Function for checking incoming answer againt the correct answer.
+  // Function for checking if incoming answer is the correct answer.
   void checkAnswer(String answer, String correctAnswer){
     if(correctAnswer.equals(answer)){
       //Serial.println("Correct answer");
@@ -241,7 +246,7 @@
     }
   }
 
-  // Functions for activating different the lights in LED-strip
+  // Functions for activating different lights on LED-strip
   void correct(){
     ligthAnswerFeedback(off, on);
   }
@@ -250,13 +255,15 @@
   }
 
 
-   /*** FUNCTIONS FOR LEDS ***/
+  /*** FUNCTIONS FOR LEDS ***/
+  // Function for setting colors on LED-strip.
   void setLEDStripColor(int red, int green, int blue){
     analogWrite(RED_LED, red);
     analogWrite(GREEN_LED, green);
     analogWrite(BLUE_LED, blue); 
   } 
 
+  //Activates when button is pressed
   void ligthPlateIsPressed(){    
     setLEDStripColor(off, off, on);
     delay(platetime);
@@ -267,6 +274,7 @@
     setLEDStripColor(off, off, off);
   }
 
+  //Short flash from the LED-strip
   void ligthFlash(){
     int i = 0;
     while(i < 3) {
@@ -277,7 +285,8 @@
       i++;
     }  
   }  
- 
+
+  //Gives feedback on answer. Red = wrong, Green = correct.
   void ligthAnswerFeedback(int red, int green){
     delay(250);
     ligthFlash();
